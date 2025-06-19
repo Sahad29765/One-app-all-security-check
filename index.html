@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Security Scanner</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <main class="hero">
+        <div class="hero-content">
+            <h1>One app, all<br>security checks</h1>
+            <p class="subtitle">From easy vulnerability scanning, to security insights and threat analysis.<br>Get your security report in a flash</p>
+            
+            <div class="scan-form">
+                <div class="input-group">
+                    <input type="text" id="domain" placeholder="Enter target domain (e.g., example.com)">
+                    <input type="number" id="maxUrls" placeholder="Max URLs (e.g., 100)">
+                </div>
+                <button onclick="startScan()" class="btn-scan">Get a free scan</button>
+            </div>
+        </div>
+
+        <div class="floating-icons">
+            <div class="icon-card sql">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzA2NjZlYiI+PHBhdGggZD0iTTEyIDJMMiA3djEwbDEwIDUgMTAtNVY3bC0xMC01ek0xMCA5LjV2NWwyLTIuNSAyIDIuNXYtNWgtNHoiLz48L3N2Zz4=" alt="SQL">
+            </div>
+            <div class="icon-card xss">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2ZmNDQ0NCI+PHBhdGggZD0iTTEyIDJDNi40OCAyIDIgNi40OCAyIDEyczQuNDggMTAgMTAgMTAgMTAtNC40OCAxMC0xMFMxNy41MiAyIDEyIDJ6bTEgMTVoLTJ2LTZoMnY2em0wLThoLTJ2LTJoMnYyeiIvPjwvc3ZnPg==" alt="XSS">
+            </div>
+            <div class="icon-card redirect">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzAwYzg1MyI+PHBhdGggZD0iTTEyIDJDNi40OCAyIDIgNi40OCAyIDEyczQuNDggMTAgMTAgMTAgMTAtNC40OCAxMC0xMFMxNy41MiAyIDEyIDJ6bTAgMThjLTQuNDEgMC04LTMuNTktOC04czMuNTktOCA4LTggOCAzLjU5IDggOC0zLjU5IDgtOCA4eiIvPjwvc3ZnPg==" alt="Redirect">
+            </div>
+            <div class="icon-card scan">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzA2NjZlYiI+PHBhdGggZD0iTTEyIDJDNi40OCAyIDIgNi40OCAyIDEyczQuNDggMTAgMTAgMTAgMTAtNC40OCAxMC0xMFMxNy41MiAyIDEyIDJ6bTAgMThjLTQuNDEgMC04LTMuNTktOC04czMuNTktOCA4LTggOCAzLjU5IDggOC0zLjU5IDgtOCA4eiIvPjwvc3ZnPg==" alt="Scan">
+            </div>
+            <div class="icon-card report">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2ZmYTAwMCI+PHBhdGggZD0iTTE0IDJINmMtMS4xIDAtMiAuOS0yIDJ2MTZjMCAxLjEuOSAyIDIgMmgxMmMxLjEgMCAyLS45IDItMlY4bC02LTZ6bTQgMThINlY0aDd2NWg1djExeiIvPjwvc3ZnPg==" alt="Report">
+            </div>
+            <div class="icon-card secure">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzAwYzg1MyI+PHBhdGggZD0iTTEyIDFMMyA1djZjMCA1LjU1IDMuODQgMTAuNzQgOSAxMiA1LjE2LTEuMjYgOS02LjQ1IDktMTJWNWwtOS00em0wIDEwLjk5aDdjLS41MyA0LjEyLTMuMjggNy43OS03IDguOTRWMTJIMy45OVY2LjNsOC4wMS0zLjR2OS4wOXoiLz48L3N2Zz4=" alt="Secure">
+            </div>
+        </div>
+    </main>
+
+    <div id="results" class="results-container"></div>
+
+    <script>
+        async function startScan() {
+            const domain = document.getElementById("domain").value;
+            const maxUrls = document.getElementById("maxUrls").value;
+            
+            if (!domain || !maxUrls) {
+                alert("Please enter both domain and max URLs.");
+                return;
+            }
+
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Scanning your domain for vulnerabilities...</p>
+                </div>
+            `;
+            
+            try {
+                const response = await fetch("/scan", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ domain, max_urls: parseInt(maxUrls) })
+                });
+                
+                const data = await response.json();
+                displayResults(data);
+            } catch (error) {
+                resultsDiv.innerHTML = `
+                    <div class="error">
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function displayResults(data) {
+            let resultHTML = `<div class="results-grid">`;
+            resultHTML += createResultCard("SQL Injection", data.sql, "sql");
+            resultHTML += createResultCard("XSS", data.xss, "xss");
+            resultHTML += createResultCard("Open Redirect", data.redirect, "redirect");
+            resultHTML += `</div>`;
+            document.getElementById("results").innerHTML = resultHTML;
+        }
+
+        function createResultCard(title, urls, type) {
+            const count = urls ? urls.length : 0;
+            return `
+                <div class="result-card ${type}">
+                    <h3>${title}</h3>
+                    <div class="count">${count}</div>
+                    ${count > 0 ? `
+                        <div class="url-list">
+                            ${urls.slice(0, 5).map(url => `<div class="url-item">${url}</div>`).join('')}
+                            ${count > 5 ? `<div class="more-urls">+${count - 5} more</div>` : ''}
+                        </div>
+                    ` : '<p class="no-vulns">No vulnerabilities found</p>'}
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
